@@ -8,7 +8,7 @@ module.exports = function(app){
     host      : 'localhost',
     user      : 'root',
     password  : '123147',
-    database  : 'sns_test'
+    database  : 'smart_sns'
   });
 
   conn.connect();
@@ -17,12 +17,12 @@ module.exports = function(app){
   router.get('/thumbnail', function(req, res){
     console.log('# get/download/thumbanail');
     var msg;
-    conn.query('select * from uploaded_file order by file_no desc', function(err, rows, fields){
+    conn.query('select * from content order by content_no desc', function(err, rows, fields){
       if(err){
         msg = err;
         res.status(505).send(msg);
       }else{
-        makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
+        // makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
       }
 
     });
@@ -63,7 +63,7 @@ router.get('/thumbnail_hash/:hash_text', function(req,res){
 //** download hashes
  router.get('/big_hash', function(req, res){
    console.log('# get/download/bigHash');
-   var query = 'select * from big_hash';
+   var query = 'select * from bigHash';
    conn.query(query, function(err, rows){
      if(err){
        console.log(err);
@@ -75,6 +75,9 @@ router.get('/thumbnail_hash/:hash_text', function(req,res){
 
  });
 
+/*
+** my function
+**/
 
 //** file 과 그에 따른 hash 정보 꺼내어 json 형태로 만들기
 var makeFileHavingHash = function(rows ,res){
