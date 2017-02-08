@@ -30,13 +30,13 @@ module.exports = function(app){
 
 
 //** download thumbnail image having specific hash
-router.get('/thumbnail_hash/:hash_text', function(req,res){
+router.get('/thumbnail/search/:hash_name', function(req,res){
   console.log('# get/download/thumbnail_hash');
-  var hash_text = req.params.hash_text;
-  console.log(hash_text);
-  var query = 'select * from uploaded_file where file_no in'+
-    '(select file_no from relation_file_hash where hash_no = (select hash_no from big_hash where hash_text = ?)) order by file_no desc ';
-  conn.query(query, [hash_text], function(err, rows){
+  var hash_name = req.params.hash_name;
+  console.log(hash_name);
+  var query = 'select * from content where content_no in'+
+    '(select content_no from ch_upload where bighash_no = (select bighash_no from bighash where bighash_name = ?)) order by content_no desc ';
+  conn.query(query, [hash_name], function(err, rows){
     if(err){
       console.log(err);
     }else{
@@ -47,14 +47,14 @@ router.get('/thumbnail_hash/:hash_text', function(req,res){
 });
 
 //** download original image
-  router.get('/original/:thumb_image_path', function(req, res){
+  router.get('/original/:thumb_content_url', function(req, res){
       console.log('# get/download/original');
-      var thumb_image_path = req.params.thumb_image_path; // 썸네일 이미지 저장 경로
-      var thumb_locate = 'thumbnail/thumb_';
-      var origin_image_path = 'original/'+thumb_image_path.substring(thumb_locate.length);    //원본 이미지 저장경로
-      console.log('-> thumbnail path : '+thumb_image_path);
-      console.log('-> original path : '+origin_image_path);
-      var json_msg = {'file_path' : origin_image_path};
+      var thumb_content_url = req.params.thumb_content_url; // 썸네일 이미지 저장 경로
+      var thumb_locate = 'thumbnail_contents/thumb_';
+      var origin_content_url = 'original_contents/'+thumb_content_url.substring(thumb_locate.length);    //원본 이미지 저장경로
+      console.log('-> thumbnail path : '+thumb_content_url);
+      console.log('-> original path : '+origin_content_url);
+      var json_msg = {'content_url' : origin_content_url};
 
       res.status(200).send(JSON.stringify(json_msg));
 
@@ -92,13 +92,13 @@ var makeFileHavingHash = function(rows ,res){
     var msg = '[';
     for(var i=0; i<rows.length; i++){
 
-      msg += '{\"file_no\": \"' + rows[i].content_no +
-             '\", \"file_name\": \"' + rows[i].content_desc +
-             '\", \"file_path\": \"' + rows[i].content_url +
-             '\", \"file_host\": \"' + rows[i].user_no +
-             '\", \"file_date\": \"' + rows[i].content_date +
-             '\", \"file_width\": \"' + rows[i].content_width +
-             '\", \"file_height\": \"' + rows[i].content_height +'\"';
+      msg += '{\"content_no\": \"' + rows[i].content_no +
+             '\", \"content_desc\": \"' + rows[i].content_desc +
+             '\", \"content_url\": \"' + rows[i].content_url +
+             '\", \"content_host\": \"' + rows[i].user_no +
+             '\", \"content_date\": \"' + rows[i].content_date +
+             '\", \"content_width\": \"' + rows[i].content_width +
+             '\", \"content_height\": \"' + rows[i].content_height +'\"';
       var count = 0;
       for(var j=0; j<hash_rows.length; j++){
 
@@ -125,7 +125,7 @@ var makeFileHavingHash = function(rows ,res){
       // console.log(msg);
       // console.log(JSON.stringify(rows));
       res.status(200).send(msg);
-      console.log(msg);
+
 
   });
 };
