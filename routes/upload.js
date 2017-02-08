@@ -44,7 +44,7 @@ module.exports = function(app){
         console.log(err);
       }
       else {
-        // file Name + user + time?? -> file구분하는 정책 생각! (익명이냐 친구기반이냐 에따라) -> 그냥 아이디 + 시간 등등
+        // file Name = time + user
           var fileName = req.file.originalname;
           console.log('date : '+ date);
           fileName =  '['+date +']'+ fileName;
@@ -65,7 +65,7 @@ module.exports = function(app){
         //** image resizing
         var width = 920;
         var height;
-        gm('./public/original/'+fileName).resize(460, null).write('./public/thumbnail/thumb_'+fileName, function(err){
+        gm('./public/original_contents/'+fileName).resize(460, null).write('./public/thumbnail_contents/thumb_'+fileName, function(err){
                                           // resize : 920 -> 460
           if(err){
             console.log(err);
@@ -74,7 +74,7 @@ module.exports = function(app){
 
             // db에 경로저장
             // console.log(req.file);
-            gm('./public/thumbnail/thumb_'+fileName).size(function(err, size){
+            gm('./public/thumbnail_contents/thumb_'+fileName).size(function(err, size){
               if(err){
                 console.log(err);
               }else{
@@ -84,24 +84,25 @@ module.exports = function(app){
                 var msg;
 
                 // into uploaded_file table
-                var query = 'insert into uploaded_file (file_name, file_path, file_host, file_date, file_width, file_height) values (?, ?, ?, ?, ?, ?)';
+                var query = 'insert into content (content_name, content_url, content_desc, user_no, content_date, content_width, content_height) values (?, ?, ?, ?, ?, ?, ?)';
                 var locate = 'thumbnail/thumb_';    // thumbnail 이미지 저장된 위치 지정
                 console.log(req.body);
-                conn.query(query, [req.body.description, locate+fileName, req.body.host, date, width, height] ,function(err, rows, fields){
+                conn.query(query, [fileName, locate+fileName, req.body.description, Number(req.body.host), date, width, height] ,function(err, rows, fields){
                   if(err){
                     msg = err;
+                    console.log(err);
                     res.send(msg);
                   }else{
                     msg = 'success';
                     console.log('-> into uploaded_file table success');
                     // into relation_file_hash table
-                    var hash = JSON.parse(req.body.hash);
+                    var bighash = JSON.parse(req.body.bighash);
 
-                    for(var i=0; i<hash.length; i++){
+                    for(var i=0; i<bighash.length; i++){
                       console.log('-> into loop');
-                      var query2 = 'insert into relation_file_hash (file_no, hash_no) values('+
-                      '(SELECT file_no FROM sns_test.uploaded_file WHERE file_host = ? ORDER BY file_no DESC limit 1), ?)';
-                      conn.query(query2, [req.body.host, hash[i]], function(err, rows){
+                      var query2 = 'insert into ch_upload (content_no, bighash_no) values('+
+                      '(SELECT content_no FROM smart_sns.content WHERE user_no = ? ORDER BY content_no DESC limit 1), ?)';
+                      conn.query(query2, [req.body.host, bighash[i]], function(err, rows){
                         if(err){
                           console.log(err);
                         }else{

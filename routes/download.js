@@ -61,7 +61,7 @@ router.get('/thumbnail_hash/:hash_text', function(req,res){
   });
 
 //** download hashes
- router.get('/big_hash', function(req, res){
+ router.get('/bighash', function(req, res){
    console.log('# get/download/bigHash');
    var query = 'select * from bigHash';
    conn.query(query, function(err, rows){
