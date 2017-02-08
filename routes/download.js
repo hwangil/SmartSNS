@@ -22,7 +22,7 @@ module.exports = function(app){
         msg = err;
         res.status(505).send(msg);
       }else{
-        // makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
+        makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
       }
 
     });
@@ -81,8 +81,8 @@ router.get('/thumbnail_hash/:hash_text', function(req,res){
 
 //** file 과 그에 따른 hash 정보 꺼내어 json 형태로 만들기
 var makeFileHavingHash = function(rows ,res){
-  conn.query('select A.file_no, B.hash_text from relation_file_hash as A, big_hash as B'+
-  ' where A.hash_no = B.hash_no', function(err,hash_rows){
+  conn.query('select A.content_no, B.bighash_name from ch_upload as A, bighash as B'+
+  ' where A.bighash_no = B.bighash_no', function(err,hash_rows){
     // console.log(rows);
     // console.log(hash_rows);
 
@@ -92,24 +92,24 @@ var makeFileHavingHash = function(rows ,res){
     var msg = '[';
     for(var i=0; i<rows.length; i++){
 
-      msg += '{\"file_no\": \"' + rows[i].file_no +
-             '\", \"file_name\": \"' + rows[i].file_name +
-             '\", \"file_path\": \"' + rows[i].file_path +
-             '\", \"file_host\": \"' + rows[i].file_host +
-             '\", \"file_date\": \"' + rows[i].file_date +
-             '\", \"file_width\": \"' + rows[i].file_width +
-             '\", \"file_height\": \"' + rows[i].file_height +'\"';
+      msg += '{\"file_no\": \"' + rows[i].content_no +
+             '\", \"file_name\": \"' + rows[i].content_desc +
+             '\", \"file_path\": \"' + rows[i].content_url +
+             '\", \"file_host\": \"' + rows[i].user_no +
+             '\", \"file_date\": \"' + rows[i].content_date +
+             '\", \"file_width\": \"' + rows[i].content_width +
+             '\", \"file_height\": \"' + rows[i].content_height +'\"';
       var count = 0;
       for(var j=0; j<hash_rows.length; j++){
 
-        if(rows[i].file_no === hash_rows[j].file_no){
+        if(rows[i].content_no === hash_rows[j].content_no){
           if(count === 0){
             count ++;
             msg+= ', \"hash_list\":[';
           }else{
             msg+=', ';
           }
-          msg += '{\"hash_text\": \"' + hash_rows[j].hash_text + '\"}';
+          msg += '{\"bighash_name\": \"' + hash_rows[j].bighash_name + '\"}';
 
         }
       }
@@ -125,7 +125,7 @@ var makeFileHavingHash = function(rows ,res){
       // console.log(msg);
       // console.log(JSON.stringify(rows));
       res.status(200).send(msg);
-
+      console.log(msg);
 
   });
 };

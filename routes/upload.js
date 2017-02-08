@@ -85,7 +85,7 @@ module.exports = function(app){
 
                 // into uploaded_file table
                 var query = 'insert into content (content_name, content_url, content_desc, user_no, content_date, content_width, content_height) values (?, ?, ?, ?, ?, ?, ?)';
-                var locate = 'thumbnail/thumb_';    // thumbnail 이미지 저장된 위치 지정
+                var locate = 'thumbnail_contents/thumb_';    // thumbnail 이미지 저장된 위치 지정
                 console.log(req.body);
                 conn.query(query, [fileName, locate+fileName, req.body.description, Number(req.body.host), date, width, height] ,function(err, rows, fields){
                   if(err){
