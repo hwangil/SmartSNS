@@ -1,3 +1,4 @@
+
 // ** upload router **//
 module.exports = function(app){
   var date;                           // 시간 정보 저장
@@ -9,7 +10,7 @@ module.exports = function(app){
     host      : 'localhost',
     user      : 'root',
     password  : '123147',
-    database  : 'sns_test'
+    database  : 'smart_sns'
   });
   conn.connect();
 
@@ -22,7 +23,7 @@ module.exports = function(app){
   // set file path & file name
   var _storage = multer.diskStorage({
     destination: function(req, file, cb){
-      cb(null, 'public/original');
+      cb(null, 'public/original_contents');
     },
     filename: function(req, file, cb){
       date = new Date().toISOString().slice(0, 19).replace('T', '-').replace(/:/g, '-');
