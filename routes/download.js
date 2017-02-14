@@ -60,7 +60,7 @@ router.get('/thumbnail/search/:hash_name', function(req,res){
 
   });
 
-//** download hashes
+//** download bighashes
  router.get('/bighash', function(req, res){
    console.log('# get/download/bigHash');
    var query = 'select * from bigHash';
@@ -73,6 +73,11 @@ router.get('/thumbnail/search/:hash_name', function(req,res){
      }
    });
 
+ });
+
+ //** download smallhashes
+ router.get('/smallhash/:smallhash', function(req, res){
+   console.log("# get/smallhash/" + req.params.smallhash);
  });
 
 /*

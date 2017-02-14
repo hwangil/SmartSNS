@@ -15,6 +15,7 @@ module.exports = function(app){
 
   router.post('/login', function(req, res){
     console.log('# post/login');
+    console.log(req.body);
     var query = 'select user_no, user_name, user_gender, user_profile_url from user where user_id = ? and user_pw = ?';
     conn.query(query, [req.body.user_id, req.body.user_pw], function(err, rows){
       if(err){
@@ -25,6 +26,7 @@ module.exports = function(app){
             console.log('-> login OK');
             res.status(200).send(JSON.stringify(rows[0]));
           }else{
+            console.log(req.body.user_id +", " + req.body.user_pw);
             console.log('-> login failure');
             res.status(401).send();         // status code 401 : 권한없음
           }
@@ -35,7 +37,7 @@ module.exports = function(app){
 
   router.post('/regist', function(req, res){
     console.log('# post/regist');
-  
+
     var query = 'insert into user (user_id, user_pw, user_name, user_age, user_gender,'+
     'user_interest_bighash1, user_interest_bighash2, user_interest_bighash3, user_profile_url) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     conn.query(query, [req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_age,
