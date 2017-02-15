@@ -1,4 +1,4 @@
-// Smart SNS beta.ver   
+// Smart SNS beta.ver
 
 var express = require('express');
 var app = express();
@@ -11,10 +11,12 @@ app.use(express.static('public'));
 var intro = require('./routes/intro')(app);
 var download = require('./routes/download')(app);
 var upload = require('./routes/upload')(app);
+var others = require('./routes/others')(app);
 
 app.use('/intro', intro);        // route intro - register, login
 app.use('/download', download);  // route downlaod
 app.use('/upload', upload);      // route upload
+app.use('/others', others);      // route others
 
 app.listen(3001, function(){
   console.log('Connected 3001 port');
