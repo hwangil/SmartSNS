@@ -17,9 +17,11 @@ module.exports = function(app){
   router.get('/thumbnail', function(req, res){
     console.log('# get/download/thumbanail');
     var msg;
-    conn.query('select * from content order by content_no desc', function(err, rows, fields){
+    // contents를 업로드한 user의 user_no과 user_name 검색
+    conn.query('select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_profile_url from content, user where content.user_no = user.user_no order by content_no desc', function(err, rows, fields){
       if(err){
         msg = err;
+        console.log(err);
         res.status(505).send(msg);
       }else{
         makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
@@ -100,7 +102,9 @@ var makeFileHavingHash = function(rows ,res){
       msg += '{\"content_no\": \"' + rows[i].content_no +
              '\", \"content_desc\": \"' + rows[i].content_desc +
              '\", \"content_url\": \"' + rows[i].content_url +
-             '\", \"content_host\": \"' + rows[i].user_no +
+             '\", \"content_host_no\": \"' + rows[i].user_no +
+             '\", \"content_host\": \"' + rows[i].user_name +
+             '\", \"content_host_profile_url\": \"' + rows[i].user_profile_url +
              '\", \"content_date\": \"' + rows[i].content_date +
              '\", \"content_width\": \"' + rows[i].content_width +
              '\", \"content_height\": \"' + rows[i].content_height +'\"';
