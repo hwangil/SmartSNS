@@ -139,5 +139,47 @@ var makeFileHavingHash = function(rows ,res){
   });
 };
 
+
+//** download the user info who likes contents
+router.get('/like_user/:content_no', function(req, res){
+  console.log('#GET /download/like_user');
+  var query = 'select user_no, user_id, user_name, user_profile_url from user '+
+      'where user_no in (select user_no from uc_like where content_no = ?)';
+
+  conn.query(query, [req.params.content_no], function(err, rows){
+    if(err)
+      console.log('select user who likes the content error : ' + err);
+    else{
+      console.log('select user who likes the content success');
+      console.log(JSON.stringify(rows));
+      // res.status(200).send(rows);
+    }
+  });
+
+});
+
+//** download the user who searched
+router.get('/search_user', function(req, res){
+  console.log('#GET /download/search_user');
+  console.log(req.query);
+  var query = 'select user_no, user_id, user_name, user_profile_url, user_interest_bighash1, user_interest_bighash2, user_interest_bighash3 from user '+
+  'where user_id like ? or user_name like ? ';
+// search_name
+  conn.query(query, ['%'+req.query.search_name+'%', '%'+req.query.search_name+'%'], function(err, rows){
+    if(err){
+      console.log('search user fail : ' + err);
+    }else{
+      console.log('search user success');
+      console.log(JSON.stringify(rows));
+    }
+  });
+});
+
+
+
+
+
+
+
   return router;
 };

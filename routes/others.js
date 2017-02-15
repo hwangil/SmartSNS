@@ -13,6 +13,8 @@ module.exports = function(app){
   });
   conn.connect();
 
+
+//** like event
   router.get('/like', function(req, res){
       console.log('#GET others/like');
       console.log(req.query);
@@ -44,6 +46,7 @@ module.exports = function(app){
       });
   });
 
+//** unlike event
   router.get('/unlike', function(req, res){
     console.log('#GET others/unlike');
     console.log(req.query);
