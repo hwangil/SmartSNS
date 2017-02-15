@@ -30,8 +30,24 @@ module.exports = function(app){
     });
   });
 
+//** download thumbnail image (특정 user)
+  router.get('/user_thumbnail', function(req, res){
+    console.log('# get/download/user_thumbnail');
+    var msg;
+    // contents를 업로드한 user의 user_no과 user_name 검색
+    conn.query('select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_profile_url from content, user where content.user_no = user.user_no and content.user_no = ? order by content_no desc', [req.query.host_no], function(err, rows, fields){
+      if(err){
+        msg = err;
+        console.log(err);
+        res.status(505).send(msg);
+      }else{
+        makeFileHavingHash(rows, res);  // file과 같이 작성된 hash tag정보 json형태로 합치기
+      }
 
-//** download thumbnail image having specific hash
+    });
+  });
+
+//** download thumbnail image having specific hash      // 여기수정 1.user_no주는거 바꾸고, 2. 누른사람 체크하기 위해 query로 바구고
 router.get('/thumbnail/search/:hash_name', function(req,res){
   console.log('# get/download/thumbnail_hash');
   var hash_name = req.params.hash_name;
