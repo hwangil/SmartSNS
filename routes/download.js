@@ -18,7 +18,10 @@ module.exports = function(app){
     console.log('# get/download/thumbanail');
     var msg;
     // contents를 업로드한 user의 user_no과 user_name 검색
-    conn.query('select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_profile_url from content, user where content.user_no = user.user_no order by content_no desc', function(err, rows, fields){
+    conn.query('select content_no, content_url, content_width, content_height,'+
+    'content_desc, content_date, content_like_count, content_comment_count, content.user_no, '+
+    'user.user_name, user.user_id, user.user_profile_url, if( EXISTS(select * from uc_like where uc_like.user_no = ? and uc_like.content_no = content.content_no), true, false ) as content_like_flag '+
+    'from content, user where content.user_no = user.user_no order by content_no desc',[req.query.user_no] ,function(err, rows, fields){
       if(err){
         msg = err;
         console.log(err);
@@ -35,7 +38,8 @@ module.exports = function(app){
     console.log('# get/download/user_thumbnail');
     var msg;
     // contents를 업로드한 user의 user_no과 user_name 검색
-    conn.query('select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_profile_url from content, user where content.user_no = user.user_no and content.user_no = ? order by content_no desc', [req.query.host_no], function(err, rows, fields){
+    conn.query('select content_no, content_url, content_width, content_height, content_desc, content_date, '+
+    'content_like_count, content_comment_count, content.user_no, user.user_name, user.user_id, user.user_profile_url, if( EXISTS(select * from uc_like where uc_like.user_no = ? and uc_like.content_no = content.content_no), true, false ) as content_like_flag from content, user where content.user_no = user.user_no and content.user_no = ? order by content_no desc', [req.query.user_no, req.query.host_no], function(err, rows, fields){
       if(err){
         msg = err;
         console.log(err);
@@ -47,14 +51,16 @@ module.exports = function(app){
     });
   });
 
-//** download thumbnail image having specific hash      // 여기수정 1.user_no주는거 바꾸고, 2. 누른사람 체크하기 위해 query로 바구고
+//** download thumbnail image having specific hash      // 2. 누른사람 체크하기 위해 query로 바구고
 router.get('/thumbnail/search/:hash_name', function(req,res){
   console.log('# get/download/thumbnail_hash');
   var hash_name = req.params.hash_name;
   console.log(hash_name);
-  var query = 'select * from content where content_no in'+
-    '(select content_no from ch_upload where bighash_no = (select bighash_no from bighash where bighash_name = ?)) order by content_no desc ';
-  conn.query(query, [hash_name], function(err, rows){
+  //select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_profile_url from content, user where content.user_no = user.user_no
+  var query = 'select content_no, content_url, content_width, content_height, content_desc, content_date, content_like_count, content_comment_count, content.user_no, user.user_name, user.user_id, user.user_profile_url, if( EXISTS(select * from uc_like where uc_like.user_no = ? and uc_like.content_no = content.content_no), true, false ) as content_like_flag from content, user where content.user_no = user.user_no and (content_no in'+
+    '(select content_no from ch_upload where bighash_no in (select bighash_no from bighash where bighash_name like ?))'+
+    'OR content_no in (select content_no from ch_upload_small where smallhash_no in (select smallhash_no from smallhash where smallhash_name like ?))) order by content_no desc ';
+  conn.query(query, [req.query.user_no, "%"+hash_name+"%", "%"+hash_name+"%"], function(err, rows){
     if(err){
       console.log(err);
     }else{
@@ -118,8 +124,12 @@ var makeFileHavingHash = function(rows ,res){
       msg += '{\"content_no\": \"' + rows[i].content_no +
              '\", \"content_desc\": \"' + rows[i].content_desc +
              '\", \"content_url\": \"' + rows[i].content_url +
+              '\", \"content_like_count\": \"' + rows[i].content_like_count +
+              '\", \"content_like_flag\": \"' + rows[i].content_like_flag +
+               '\", \"content_comment_count\": \"' + rows[i].content_comment_count +
              '\", \"content_host_no\": \"' + rows[i].user_no +
              '\", \"content_host\": \"' + rows[i].user_name +
+             '\", \"content_host_id\": \"' + rows[i].user_id +
              '\", \"content_host_profile_url\": \"' + rows[i].user_profile_url +
              '\", \"content_date\": \"' + rows[i].content_date +
              '\", \"content_width\": \"' + rows[i].content_width +
@@ -168,7 +178,7 @@ router.get('/like_user/:content_no', function(req, res){
     else{
       console.log('select user who likes the content success');
       console.log(JSON.stringify(rows));
-      // res.status(200).send(rows);
+      res.status(200).send(JSON.stringify(rows));
     }
   });
 
@@ -187,6 +197,8 @@ router.get('/search_user', function(req, res){
     }else{
       console.log('search user success');
       console.log(JSON.stringify(rows));
+      res.status(200).send(rows);
+
     }
   });
 });

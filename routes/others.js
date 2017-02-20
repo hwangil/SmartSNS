@@ -33,8 +33,8 @@ module.exports = function(app){
           console.log('update count error : ' + err);
         }else{
             // response!
-            conn.query('select content_no, content_like_count from content where content_no = ?',
-          [req.query.content_no], function(err, rows){
+            conn.query('select content_no, content_like_count,  if( EXISTS(select * from uc_like where uc_like.user_no = ? and uc_like.content_no = ?), true, false ) as content_like_flag from content where content_no = ?',
+          [req.query.user_no, req.query.content_no, req.query.content_no], function(err, rows){
               if(err){
                 res.status(500).send();
               }else {
@@ -65,8 +65,8 @@ module.exports = function(app){
         console.log('update count error : ' + err);
       }else{
           // response!
-          conn.query('select content_no, content_like_count from content where content_no = ?',
-        [req.query.content_no], function(err, rows){
+          conn.query('select content_no, content_like_count, if( EXISTS(select * from uc_like where uc_like.user_no = ? and uc_like.content_no = ?), true, false ) as content_like_flag from content where content_no = ?',
+        [req.query.user_no, req.query.content_no, req.query.content_no], function(err, rows){
             if(err){
               res.status(500).send();
             }else {

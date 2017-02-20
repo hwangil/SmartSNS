@@ -123,7 +123,7 @@ module.exports = function(app){
                             console.log(err);
                           }else{
                             console.log('-> into relation_file_hash success!');
-                            res.status(200).send();
+                            // res.status(200).send();
                           }
                         });
                     }
@@ -134,6 +134,7 @@ module.exports = function(app){
 
                     }
                   }
+                  res.status(200).send();
                   }
                 });
 
@@ -168,7 +169,7 @@ module.exports = function(app){
               console.log(err);
             }else{
               console.log('-> into relation_file_hash success when smallhash exists!');
-              res.status(200).send();
+              // res.status(200).send();
             }
           });
 
@@ -187,7 +188,7 @@ module.exports = function(app){
                   console.log(err);
                 }else{
                   console.log('-> into relation_file_hash success when smallhash doesnt exist!!');
-                  res.status(200).send();
+                  // res.status(200).send();
                 }
               });
             }

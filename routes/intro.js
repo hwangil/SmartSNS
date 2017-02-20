@@ -16,7 +16,7 @@ module.exports = function(app){
   router.post('/login', function(req, res){
     console.log('# post/login');
     console.log(req.body);
-    var query = 'select user_no, user_name, user_gender, user_profile_url from user where user_id = ? and user_pw = ?';
+    var query = 'select * from user where user_id = ? and user_pw = ?';
     conn.query(query, [req.body.user_id, req.body.user_pw], function(err, rows){
       if(err){
         console.log(err);
