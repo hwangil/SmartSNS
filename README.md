@@ -1,4 +1,4 @@
-SmartSNS_server
+SmartSocialNetworkService (SmartSNS)
 ===================
 
 * This is my graduation project(server with node.js).
