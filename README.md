@@ -9,4 +9,5 @@ SmartSocialNetworkService (SmartSNS)
 
 * You can share high-quality original images with people more easily and efficiently :)
 
+> *2017.04*
 *****
