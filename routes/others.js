@@ -8,6 +8,7 @@ module.exports = function(app){
   var conn = mysql.createConnection({
     host      : 'localhost',
     user      : 'root',
+    port      :  3308,
     password  : '123147',
     database  : 'smart_sns'
   });

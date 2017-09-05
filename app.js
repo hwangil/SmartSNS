@@ -12,11 +12,19 @@ var intro = require('./routes/intro')(app);
 var download = require('./routes/download')(app);
 var upload = require('./routes/upload')(app);
 var others = require('./routes/others')(app);
+var prefetch = require('./routes/prefetch')(app);
+var count = require('./routes/count')(app);
 
 app.use('/intro', intro);        // route intro - register, login
 app.use('/download', download);  // route downlaod
 app.use('/upload', upload);      // route upload
 app.use('/others', others);      // route others
+app.use('/prefetch', prefetch);
+app.use('/count', count);
+
+app.get('/', function (req, res){
+  res.send(process.cwd());
+});
 
 app.listen(3001, function(){
   console.log('Connected 3001 port');
